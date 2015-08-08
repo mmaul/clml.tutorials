@@ -2,9 +2,6 @@
 Tutorials for CLML - Common Lisp Machine Learning and Statistics Systems
 
 ## Tutorials Blog
-All tutorials are availible on the web at 
-
-## Tutorials Blog
 All tutorials are availible on the web at the [clml.tutorials blog]( https://mmaul.github.io/clml.tutorials/)
 
 ## Available Tutorials
