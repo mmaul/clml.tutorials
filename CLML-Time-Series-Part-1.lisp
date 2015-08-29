@@ -7,9 +7,9 @@
                 :eazy-gnuplot
             ))
 
-(defpackage #:time-series-part-1
+(defpackage #:time-series-part-2
   (:use #:cl
-        #:fishbowl-user ; Not needed unless using iPython notebook
+        #:cl-jupyter-user ; Not needed unless using iPython notebook
         #:clml.time-series.read-data
         #:clml.time-series.anomaly-detection
         #:clml.time-series.exponential-smoothing
@@ -20,7 +20,7 @@
   )
 
 
-(in-package :time-series-part-1)
+(in-package :time-series-part-2)
 
 (defparameter dataset (read-data-from-file 
         (clml.utility.data:fetch 
@@ -36,25 +36,27 @@ msi-access
 
 (subseq(ts-points msi-access) 0 5)
 
-(svg 
-    (plot-dataset msi-access "hits" :terminal '(:svg :enhanced :mouse :size 900 600)
+(progn
+    (plot-dataset msi-access "hits" :terminal '(:png)
         :range '(0 40) :title "MSI Access Log - first 40 points" :ytics-font ",8" :xtics-font ",8"
-        :xlabel-font ",15" :ylabel-font ",15"))
+        :xlabel-font ",15" :ylabel-font ",15" :output "msi_access_log_40.png")
+        (display-png (png-from-file "msi_access_log_40.png")))
 
-(svg (plot-dataset msi-access "hits" :terminal '(:svg :enhanced :mouse :size 900 600)
+(progn
+ (plot-dataset msi-access "hits" :terminal '(:png )
         :title "MSI Access Log" :ytics-font ",8" :xtics-font ",8"
-        :xlabel-font ",15" :ylabel-font ",15" :xtic-interval 500)))
+        :xlabel-font ",15" :ylabel-font ",15" :xtic-interval 500 :output "msi_access_log.png")
+ (display-png (png-from-file "msi_access_log.png")))
 
 (defparameter c-msi-access 
     (ts-cleaning msi-access :outlier-types-alist '(("hits" . :std-dev)) 
                             :outlier-values-alist '((:std-dev . 5)) 
                             :interp-types-alist '(("hits" . :mean))))
 
-(svg (plot-dataset c-msi-access "hits" :terminal '(:svg :enhanced :mouse :size 900 600)
-
+(let ((png-file "clean-msi-access-log")) 
+ (plot-dataset c-msi-access "hits" :terminal '(:png)
         :title "Cleaned MSI Access Log" :ytics-font ",8" :xtics-font ",8"
-
         :xlabel-font ",15" :ylabel-font ",15" :xtic-interval 500
-        :yrange '(0 8000)))
-
-
+        :yrange '(0 8000) 
+        :output png-file)
+  (display-png (png-from-file png-file)))
