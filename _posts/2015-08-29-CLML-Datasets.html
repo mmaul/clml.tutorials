@@ -3,7 +3,7 @@
 <head>
 
 <meta charset="utf-8" />
-<title>CLML-Time-Series-Part-1</title>
+<title>CLML-Datasets</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -177,7 +177,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="CLML-Time-Series-Tutorial-Part-1">CLML Time Series Tutorial Part 1<a class="anchor-link" href="#CLML-Time-Series-Tutorial-Part-1">&#182;</a></h1>
+<h1 id="CLML-Datasets-Tutorial">CLML Datasets Tutorial<a class="anchor-link" href="#CLML-Datasets-Tutorial">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -197,7 +197,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This document is a the first is a series of tutorials illustrating the use of the CLML.time-series package. In fact it is a first in a series of series of tutorials illustrating the use of CLML.</p>
+<p>This document is part series of tutorials illustrating the use of CLML.</p>
 
 </div>
 </div>
@@ -207,13 +207,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Caveat">Caveat<a class="anchor-link" href="#Caveat">&#182;</a></h3><p>Anyone wishing to run this notebook or the code contained there in must take note of the following:</p>
-<ul>
-<li>This time series cleaning section of this tutorial relies on the github version of <a href="https://github.com/mmaul/clml.git"><code>CLML</code> https://github.com/mmaul/clml.git</a> or a quicklist-dist <code>CLML</code>&gt; than 20150805 </li>
-<li>The plotting portion of this code requires the system <a href="https://github.com/mmaul/clml.extras.git"><code>clml.extras</code> https://github.com/mmaul/clml.extras.git</a> which is not currently in quicklisp.</li>
-<li>While the above git repositories are not in quicklisp they be loaded by <code>quickload</code> by placing the repositories in $HOME/quicklisp/local-projects</li>
-</ul>
-
+<h2 id="Datasets,-what-and-why">Datasets, what and why<a class="anchor-link" href="#Datasets,-what-and-why">&#182;</a></h2>
 </div>
 </div>
 </div>
@@ -222,8 +216,7 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Time-Series,-what-and-why">Time Series, what and why<a class="anchor-link" href="#Time-Series,-what-and-why">&#182;</a></h2><p>A time series is a set of data points collected over a given period of time. Examples of time series are stock ticker data, sensor data and netflow data. Generally one wants to preform some sort of analysis on a time series and or use previous performance to forecast future performance or else use past performance to detect anomalies new data.</p>
-<p>The CLML.time-series system contains functionality to manipulate, analyze time series data. CLML.time-series has a definite opinion on what a time-series is. We will see that after we load some data.</p>
+<p>CLML datasets are two dimensional tabular data structures. In CLML datasets are used for (not to sound recursive) storing datasets. Datasets may contain numerical and categorical data. Datasets also contain column metadata (<code>dimensions</code>) and also provide facilities for extracting columns, dataset cleaning and splitting. Datasets in CLML are similar to dataframes in R or Pandas.DataFrames in Python.</p>
 <p>Lets get started by loading the system necessary for this tutorial and creating a namespace to work in.</p>
 
 </div>
@@ -235,8 +228,7 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">ql:quickload</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:clml.utility</span> <span class="c1">; Need clml.utility.data to get data from the net</span>
-                <span class="ss">:clml.hjs</span> <span class="c1">; Need clml.hjs.read-data to poke around the raw dataset</span>
-                <span class="ss">:clml.time-series</span> <span class="c1">; Need Time Series package obviously</span>
+                <span class="ss">:clml.hjs</span> <span class="c1">; Need clml.hjs.read-data for dataset</span>
                 <span class="ss">:iolib</span>
                 <span class="ss">:clml.extras.eazy-gnuplot</span>
                 <span class="ss">:eazy-gnuplot</span>
@@ -265,12 +257,6 @@ To load &quot;clml.hjs&quot;:
 
 ; Loading &quot;clml.hjs&quot;
 
-To load &quot;clml.time-series&quot;:
-  Load 1 ASDF system:
-    clml.time-series
-
-; Loading &quot;clml.time-series&quot;
-
 To load &quot;iolib&quot;:
   Load 1 ASDF system:
     iolib
@@ -297,8 +283,7 @@ To load &quot;eazy-gnuplot&quot;:
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>(:CLML.UTILITY :CLML.HJS :CLML.TIME-SERIES :IOLIB :CLML.EXTRAS.EAZY-GNUPLOT
- :EAZY-GNUPLOT)</pre>
+<pre>(:CLML.UTILITY :CLML.HJS :IOLIB :CLML.EXTRAS.EAZY-GNUPLOT :EAZY-GNUPLOT)</pre>
 </div>
 
 </div>
@@ -312,17 +297,12 @@ To load &quot;eazy-gnuplot&quot;:
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defpackage</span> <span class="ss">#:time-series-part-2</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defpackage</span> <span class="ss">#:datasets-tutorial</span>
   <span class="p">(</span><span class="ss">:use</span> <span class="ss">#:cl</span>
         <span class="ss">#:cl-jupyter-user</span> <span class="c1">; Not needed unless using iPython notebook</span>
-        <span class="ss">#:clml.time-series.read-data</span>
-        <span class="ss">#:clml.time-series.anomaly-detection</span>
-        <span class="ss">#:clml.time-series.exponential-smoothing</span>
-        <span class="ss">#:clml.extras.eazy-gnuplot</span><span class="p">)</span>
-  <span class="p">(</span><span class="ss">:import-from</span> <span class="ss">#:clml.hjs.read-data</span> <span class="ss">#:head-points</span> <span class="ss">#:!!</span> <span class="ss">#:dataset-dimensions</span><span class="p">)</span>
-  <span class="p">(</span><span class="ss">:import-from</span> <span class="ss">#:clml.time-series.util</span> <span class="ss">#:predict</span><span class="p">)</span>
-  <span class="p">(</span><span class="ss">:import-from</span> <span class="ss">#:clml.hjs.read-data</span> <span class="ss">#:read-data-from-file</span><span class="p">)</span>
-  <span class="p">)</span>
+        <span class="ss">#:clml.hjs.read-data</span>
+        <span class="ss">#:clml.hjs.meta</span> <span class="c1">; util function</span>
+        <span class="ss">#:clml.extras.eazy-gnuplot</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -337,7 +317,7 @@ To load &quot;eazy-gnuplot&quot;:
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#&lt;PACKAGE &quot;TIME-SERIES-PART-2&quot;&gt;</pre>
+<pre>#&lt;PACKAGE &quot;DATASETS-TUTORIAL&quot;&gt;</pre>
 </div>
 
 </div>
@@ -351,7 +331,7 @@ To load &quot;eazy-gnuplot&quot;:
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">in-package</span> <span class="ss">:time-series-part-2</span><span class="p">)</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">in-package</span> <span class="ss">:datasets-tutorial</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -366,7 +346,7 @@ To load &quot;eazy-gnuplot&quot;:
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#&lt;PACKAGE &quot;TIME-SERIES-PART-2&quot;&gt;</pre>
+<pre>#&lt;PACKAGE &quot;DATASETS-TUTORIAL&quot;&gt;</pre>
 </div>
 
 </div>
@@ -380,8 +360,7 @@ To load &quot;eazy-gnuplot&quot;:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-and-Datasets">Data and Datasets<a class="anchor-link" href="#Data-and-Datasets">&#182;</a></h2><p>We are going to look at how time series data can be used by CLML.
-First lets get some data...</p>
+<p>Lets load some data that we will use as we learn about datasets.</p>
 
 </div>
 </div>
@@ -392,8 +371,8 @@ First lets get some data...</p>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">dataset</span> <span class="p">(</span><span class="nv">read-data-from-file</span> 
-        <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> 
-            <span class="s">&quot;https://mmaul.github.io/clml.data/sample/msi-access-stat/access-log-stat.sexp&quot;</span><span class="p">)))</span>
+                       <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> <span class="s">&quot;https://mmaul.github.io/clml.data/sample/cars.csv&quot;</span><span class="p">)</span> 
+                       <span class="ss">:type</span> <span class="ss">:csv</span> <span class="ss">:csv-type-spec</span> <span class="o">&#39;</span><span class="p">(</span><span class="nc">integer</span> <span class="nc">integer</span><span class="p">)))</span>
 </pre></div>
 
 </div>
@@ -422,7 +401,17 @@ First lets get some data...</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>CLML's main unit of currency in working with data is the dataset. The dataset is a hierarchy series of classes that contain datapoints and metadata. They are similar to dataframes in R or data-tables in Python.</p>
+<h2 id="Data-and-Datasets">Data and Datasets<a class="anchor-link" href="#Data-and-Datasets">&#182;</a></h2><p>CLML has a number of different specializations of datasets such as</p>
+<ul>
+<li><code>unspecialized-dataset</code> untyped and unspecialized data</li>
+<li><code>numeric-dataset</code> dataset containing numeric (<code>double-float</code>) data</li>
+<li><code>category-dataset</code> dataset for categorical (<code>string</code>) data</li>
+<li><code>numeric-and-category-dataset</code> dataset containing a mixture of numeric and categorical data</li>
+<li><code>numeric-matrix-dataset</code> dataset where numeric values are stored as a matrix</li>
+<li><code>numeric-matrix-and-category-dataset</code> dataset where numeric values are stored as a matrix as well as having categorical data</li>
+</ul>
+<h3 id="Data-representation">Data representation<a class="anchor-link" href="#Data-representation">&#182;</a></h3><p>All datasets except the matrix datasets represent data as a vector of vectors. The inner vector contains the columns of each row. For datasets with categories, numeric and category data are stored in seperate vectors.</p>
+<p>We can see below how the data is represented.</p>
 
 </div>
 </div>
@@ -432,7 +421,7 @@ First lets get some data...</p>
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="nv">dataset</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">dataset-points</span> <span class="nv">dataset</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -447,12 +436,13 @@ First lets get some data...</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#&lt;CLML.HJS.READ-DATA:UNSPECIALIZED-DATASET &gt;
-DIMENSIONS: date/time | hits
-TYPES:      UNKNOWN | UNKNOWN
-NUMBER OF DIMENSIONS: 2
-DATA POINTS: 9068 POINTS
-</pre>
+<pre>#(#(4 2) #(4 10) #(7 4) #(7 22) #(8 16) #(9 10) #(10 18) #(10 26) #(10 34)
+  #(11 17) #(11 28) #(12 14) #(12 20) #(12 24) #(12 28) #(13 26) #(13 34)
+  #(13 34) #(13 46) #(14 26) #(14 36) #(14 60) #(14 80) #(15 20) #(15 26)
+  #(15 54) #(16 32) #(16 40) #(17 32) #(17 40) #(17 50) #(18 42) #(18 56)
+  #(18 76) #(18 84) #(19 36) #(19 46) #(19 68) #(20 32) #(20 48) #(20 52)
+  #(20 56) #(20 64) #(22 66) #(23 54) #(24 70) #(24 92) #(24 93) #(24 120)
+  #(25 85))</pre>
 </div>
 
 </div>
@@ -466,21 +456,7 @@ DATA POINTS: 9068 POINTS
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>CCLML has a number of different specializations of dataset such as</p>
-<ul>
-<li><code>unspecialized-dataset</code> untyped and unspecialized data</li>
-<li><code>numeric-dataset</code> dataset containing numeric (<code>double-float</code>) data</li>
-<li><code>categor-dataset</code> dataset for categorical (<code>string</code>) data</li>
-<li><code>numeric-and-category-dataset</code> dataset containing a mixture of numeric and categorical data</li>
-</ul>
-<p>Most relevant to this tutorial</p>
-<ul>
-<li><code>time-series-dataset</code> dataset containing time-series data</li>
-</ul>
-<p>Datasets can be created directly or can be created by reading them from a file. Supported data formats or CSV and SEXP.
-In this case the <code>read-data-from-file</code> function is reading a data set from a file. The file in this case is a file that is obtained with the <code>fetch</code> function, which downloads and caches a file from a location on a local files system or a URL.</p>
-<p>Lets take a look at the data, it apparently is from a hit counter.
-<code>head-points</code> gives us the first 5 rows of a dataset ( if we wanted all the rows in a dataset we would have used <code>dataset-points</code></p>
+<p>It may not be convenient to display the whole dataset to take a look at is. We could have used <code>subseq</code> but there is a helper method called <code>head-points</code>.</p>
 
 </div>
 </div>
@@ -505,9 +481,7 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#(#(&quot;12/May/2008 03:00-03:59&quot; 210) #(&quot;12/May/2008 04:00-04:59&quot; 265)
-  #(&quot;12/May/2008 05:00-05:59&quot; 219) #(&quot;12/May/2008 06:00-06:59&quot; 284)
-  #(&quot;12/May/2008 07:00-07:59&quot; 287))</pre>
+<pre>#(#(4 2) #(4 10) #(7 4) #(7 22) #(8 16))</pre>
 </div>
 
 </div>
@@ -521,8 +495,13 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Examining the data it looks like hits collected hourly. <code>time-series-datasets</code> can be created with the <code>time-series</code> function.</p>
-<p>Now Lets put this in a turn this into a time-series-dataset so we can do stuff with it.</p>
+<h3 id="Dimensions">Dimensions<a class="anchor-link" href="#Dimensions">&#182;</a></h3><p>All Datasets have the <code>dimensions</code> slot which contain the column metadata. The dimensions slot contains a list of <code>dimension</code> instances. Each dimension instance contains the following slots (accessor prefix is dimension):</p>
+<ul>
+<li><code>name</code> column name</li>
+<li><code>type</code> type of data in column (e.g. :category :numeric :unknown)</li>
+<li><code>index</code> index on column vectors of column</li>
+<li><code>metadata</code> - alist that CAN containing useful information, such as equality tests for category data</li>
+</ul>
 
 </div>
 </div>
@@ -532,7 +511,7 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 <div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">msi-access</span> <span class="p">(</span><span class="nv">time-series-data</span> <span class="nv">dataset</span> <span class="ss">:range</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="ss">:time-label</span> <span class="mi">0</span> <span class="ss">:frequency</span> <span class="mi">24</span> <span class="ss">:start</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">18</span> <span class="mi">3</span><span class="p">)))</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">dataset-dimensions</span> <span class="nv">dataset</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -547,7 +526,8 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>MSI-ACCESS</pre>
+<pre>#(#&lt;CLML.HJS.READ-DATA::DIMENSION NAME: speed, TYPE: UNKNOWN, INDEX: 0.&gt;
+  #&lt;CLML.HJS.READ-DATA::DIMENSION NAME: distance, TYPE: UNKNOWN, INDEX: 1.&gt;)</pre>
 </div>
 
 </div>
@@ -555,13 +535,30 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Creating-datasets">Creating datasets<a class="anchor-link" href="#Creating-datasets">&#182;</a></h3><p>Datasets can be created directly or can be created by reading them from a file. Supported data formats or CSV and SEXP.
+ Earlier we used the <code>read-data-from-file</code> function to read a dataset from a CSV file. The file in this case is a file that is obtained with the <code>fetch</code> from the <code>clml.utility</code> system, which downloads and caches a file in a location on a local files system or a URL. Datasets can also be created programatically.</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="nv">msi-access</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">make-numeric-and-category-dataset</span>  
+ <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;cat 1&quot;</span> <span class="s">&quot;num 1&quot;</span><span class="p">)</span>                           <span class="c1">; &lt;-- Column names </span>
+ <span class="p">(</span><span class="nb">vector</span> <span class="p">(</span><span class="nv">v2dvec</span> <span class="o">#(</span><span class="mf">1.0d0</span><span class="p">))</span> <span class="p">(</span><span class="nv">v2dvec</span> <span class="o">#(</span><span class="mf">2.0d0</span><span class="p">)))</span> <span class="c1">; &lt;-- Numeric data </span>
+          <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>                                <span class="c1">; &lt;-- Indexes of numeric column</span>
+          <span class="o">#(#(</span><span class="s">&quot;a&quot;</span><span class="p">)</span> <span class="o">#(</span><span class="s">&quot;b&quot;</span><span class="p">))</span>                    <span class="c1">; &lt;-- Category Data</span>
+          <span class="o">&#39;</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>                                <span class="c1">; &lt;-- Indexes of category data</span>
+<span class="p">)</span>
 </pre></div>
 
 </div>
@@ -572,19 +569,16 @@ In this case the <code>read-data-from-file</code> function is reading a data set
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[11]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#&lt;TIME-SERIES-DATASET &gt;
-DIMENSIONS: hits
-TYPES:      NUMERIC
-NUMBER OF DIMENSIONS: 1
-FREQUENCY:  24
-START:      (18 3)
-END:        (395 22)
-POINTS:     9068
-TIME-LABEL: date/time
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: cat 1 | num 1
+TYPES:      CATEGORY | NUMERIC
+NUMBER OF DIMENSIONS: 2
+CATEGORY DATA POINTS: 2 POINTS
+NUMERIC DATA POINTS: 2 POINTS
 </pre>
 </div>
 
@@ -599,19 +593,17 @@ TIME-LABEL: date/time
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This is the point where we will talk about CLML.time-series's definite opinions about time series. Time series in CLML.time-series are <a href="https://en.wikipedia.org/wiki/Discrete_time_and_continuous_time">discrete</a>. In <code>CLML.time-series</code>'s opinion time series have a regular frequency. (This implies that time series data must have a reading at each period. However <code>CLML.time-series</code> does support missing values which will be covered in a later part of this series) The representation of frequency is a important, especially when comparing time-series points at regular intervals. The <code>FREQUENCY</code> slot specifies the number of datapoints per cycle. The <code>START</code> slot indicates the starting time index and frequency interval. The measurements are contained in the points slot and are represented as a vector of <code>ts-point</code> objects. Another useful thing to know is the slot accessor prefix is <code>ts-</code></p>
-<p>In fact in the dataset we just created if you look at the raw dataset above you will see there are no time specifiers in the data (there are labels however but they are not used in computations). This can actually be very important if your time-series has literally astronomical ranges. Some time-series libraries/databases encode the index as seconds or milliseconds from some fixed point in time. Doing that then constricts the ability of the time series to represent times to the range of the datatype being used to encode the time index. To be fair CLML.time-series in effect is doing the same thing however the time index is relative and the time indices can range from 0 to <code>most-positive-fixnum</code> (~4.6e18 in SBCL) given a datapoint is defined by the time and frequency interval (which also range from 0 to <code>most-positive-fixnum</code> the number of theoretically possible datapoints in a time series is <code>most-positive-fixnum</code> squared (in SBCL this would be greater than 2.0e35)</p>
-<p>Lets look at the points in the dataset to see how they are represented.</p>
+<h3 id="Specializing-datasets">Specializing datasets<a class="anchor-link" href="#Specializing-datasets">&#182;</a></h3><p>The dataset we loaded is currently unspecialized, we haven't told CLML much about it yet. We can use the <code>pick-and-specialize-data</code> method to fill in the details.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">subseq</span><span class="p">(</span><span class="nv">ts-points</span> <span class="nv">msi-access</span><span class="p">)</span> <span class="mi">0</span> <span class="mi">5</span><span class="p">)</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">pick-and-specialize-data</span> <span class="nv">dataset</span> <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:numeric</span> <span class="ss">:numeric</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -622,35 +614,16 @@ TIME-LABEL: date/time
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[9]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[8]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>#(#S(CLML.TIME-SERIES.READ-DATA::TS-POINT
-     :TIME 18
-     :FREQ 3
-     :LABEL &quot;12/May/2008 03:00-03:59&quot;
-     :POS #(210.0d0))
-  #S(CLML.TIME-SERIES.READ-DATA::TS-POINT
-     :TIME 18
-     :FREQ 4
-     :LABEL &quot;12/May/2008 04:00-04:59&quot;
-     :POS #(265.0d0))
-  #S(CLML.TIME-SERIES.READ-DATA::TS-POINT
-     :TIME 18
-     :FREQ 5
-     :LABEL &quot;12/May/2008 05:00-05:59&quot;
-     :POS #(219.0d0))
-  #S(CLML.TIME-SERIES.READ-DATA::TS-POINT
-     :TIME 18
-     :FREQ 6
-     :LABEL &quot;12/May/2008 06:00-06:59&quot;
-     :POS #(284.0d0))
-  #S(CLML.TIME-SERIES.READ-DATA::TS-POINT
-     :TIME 18
-     :FREQ 7
-     :LABEL &quot;12/May/2008 07:00-07:59&quot;
-     :POS #(287.0d0)))</pre>
+<pre>#&lt;NUMERIC-DATASET &gt;
+DIMENSIONS: speed | distance
+TYPES:      NUMERIC | NUMERIC
+NUMBER OF DIMENSIONS: 2
+NUMERIC DATA POINTS: 50 POINTS
+</pre>
 </div>
 
 </div>
@@ -664,24 +637,113 @@ TIME-LABEL: date/time
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>he <code>ts-point</code> class encodes each measurement maintaining the time and frequency interval, a label (which is just a string, ad the actual measurements. The measurements in the <code>pos</code> slot are stored in a vector arbitrary length. Looking back to <strong>IN[8]</strong> you can see when we gave <code>time-series</code> a start time of 18 , and a start frequency interval of 3 we can see by examining the <code>ts-points</code>s how this is actually represented. Another useful thing to know is that the accessor prefix of <code>ts-point</code> is <code>ts-s-</code></p>
-<p><code>time-series-datasets</code> can also be created programattically.
-Some examples are:</p>
+<p>We can see <code>pick-and-specialize-data</code> returned a numeric dataset based on the supplied <code>:data-types</code> specification. <code>pick-and-specialize-data</code> has two parameters <code>:range</code> and :<code>except</code>. Both parameters deal with column selection <code>:range</code> specifies a range of columns (as a list) to use in our new dataset while <code>:except</code> specifies a list of columns to exclude from our new dataset. We had also mentioned the matrix datasets, <code>pick-and-specialize-data</code> can also change the representation from a vector of vectors to a matrix.</p>
 
-<pre><code>(make-constant-time-series-data  '("a") (vector (clml.hjs.meta:make-dvec 1)))
-(make-constant-time-series-data '("price") (vector (v2dvec #(43.2d0)) (v2dvec #(44.0d0)) (v2dvec #(1049.0d0))))
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">ds</span> <span class="p">(</span><span class="nv">pick-and-specialize-data</span> <span class="nv">dataset</span> <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:numeric</span> <span class="ss">:numeric</span><span class="p">)</span> 
+           <span class="ss">:store-numeric-data-as-matrix</span> <span class="no">t</span><span class="p">)))</span>
+           <span class="p">(</span><span class="nb">print</span> <span class="nv">ds</span><span class="p">)</span>
+           <span class="p">(</span><span class="nv">dataset-numeric-points</span> <span class="nv">ds</span><span class="p">))</span>
+</pre></div>
 
-</code></pre>
-<h2 id="Plotting-Datasets">Plotting Datasets<a class="anchor-link" href="#Plotting-Datasets">&#182;</a></h2><p>Lets plot our data with the <code>clml.extras.eazy-gnuplot:plot-dataset</code>.</p>
-<p>Some quick things to note about the <code>plot-dataset</code> method:</p>
-<ul>
-<li>The only required arguments are <code>dataset</code> and <code>y-col</code></li>
-<li>The terminal defaults to <code>:wxt :persist</code> so for use in a notebook we specify a <strong>PNG</strong> terminal</li>
-<li>The <code>svg</code> function is used to render the plot in the notebook</li>
-<li><code>eazy-gnuplot</code> is used as the plotting library all plotting arguments follow gnuplot and <code>eazy-gnuplot</code>'s conventions</li>
-<li>The <code>:range</code> argument specifies the start and end of the points to display</li>
-<li>The <code>:frequencies</code> argument is a list of frequencies to plot, handy for observing behavior over specific intervals.</li>
-</ul>
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+#&lt;NUMERIC-MATRIX-DATASET &gt;
+DIMENSIONS: speed | distance
+
+TYPES:      NUMERIC | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+NUMERIC-MATRIX DATA POINTS: 50 POINTS
+ </pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[56]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#2A((4.0d0 2.0d0)
+    (4.0d0 10.0d0)
+    (7.0d0 4.0d0)
+    (7.0d0 22.0d0)
+    (8.0d0 16.0d0)
+    (9.0d0 10.0d0)
+    (10.0d0 18.0d0)
+    (10.0d0 26.0d0)
+    (10.0d0 34.0d0)
+    (11.0d0 17.0d0)
+    (11.0d0 28.0d0)
+    (12.0d0 14.0d0)
+    (12.0d0 20.0d0)
+    (12.0d0 24.0d0)
+    (12.0d0 28.0d0)
+    (13.0d0 26.0d0)
+    (13.0d0 34.0d0)
+    (13.0d0 34.0d0)
+    (13.0d0 46.0d0)
+    (14.0d0 26.0d0)
+    (14.0d0 36.0d0)
+    (14.0d0 60.0d0)
+    (14.0d0 80.0d0)
+    (15.0d0 20.0d0)
+    (15.0d0 26.0d0)
+    (15.0d0 54.0d0)
+    (16.0d0 32.0d0)
+    (16.0d0 40.0d0)
+    (17.0d0 32.0d0)
+    (17.0d0 40.0d0)
+    (17.0d0 50.0d0)
+    (18.0d0 42.0d0)
+    (18.0d0 56.0d0)
+    (18.0d0 76.0d0)
+    (18.0d0 84.0d0)
+    (19.0d0 36.0d0)
+    (19.0d0 46.0d0)
+    (19.0d0 68.0d0)
+    (20.0d0 32.0d0)
+    (20.0d0 48.0d0)
+    (20.0d0 52.0d0)
+    (20.0d0 56.0d0)
+    (20.0d0 64.0d0)
+    (22.0d0 66.0d0)
+    (23.0d0 54.0d0)
+    (24.0d0 70.0d0)
+    (24.0d0 92.0d0)
+    (24.0d0 93.0d0)
+    (24.0d0 120.0d0)
+    (25.0d0 85.0d0))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We should also show an example of a dataset with categories.</p>
 
 </div>
 </div>
@@ -691,11 +753,9 @@ Some examples are:</p>
 <div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">progn</span>
-    <span class="p">(</span><span class="nv">plot-dataset</span> <span class="nv">msi-access</span> <span class="s">&quot;hits&quot;</span> <span class="ss">:terminal</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:png</span><span class="p">)</span>
-        <span class="ss">:range</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">0</span> <span class="mi">40</span><span class="p">)</span> <span class="ss">:title</span> <span class="s">&quot;MSI Access Log - first 40 points&quot;</span> <span class="ss">:ytics-font</span> <span class="s">&quot;,8&quot;</span> <span class="ss">:xtics-font</span> <span class="s">&quot;,8&quot;</span>
-        <span class="ss">:xlabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:ylabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:output</span> <span class="s">&quot;msi_access_log_40.png&quot;</span><span class="p">)</span>
-        <span class="p">(</span><span class="nv">display-png</span> <span class="p">(</span><span class="nv">png-from-file</span> <span class="s">&quot;msi_access_log_40.png&quot;</span><span class="p">)))</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">pick-and-specialize-data</span> <span class="p">(</span><span class="nv">read-data-from-file</span> 
+                           <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> <span class="s">&quot;https://mmaul.github.io/clml.data/sample/UKgas.sexp&quot;</span><span class="p">))</span>
+     <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:category</span> <span class="ss">:numeric</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -709,9 +769,14 @@ Some examples are:</p>
 <div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
 
 
-<div class="output_png output_subarea output_execute_result">
-<img src="data:image/png;base64,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"
->
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+TYPES:      CATEGORY | NUMERIC
+NUMBER OF DIMENSIONS: 2
+CATEGORY DATA POINTS: 108 POINTS
+NUMERIC DATA POINTS: 108 POINTS
+</pre>
 </div>
 
 </div>
@@ -725,7 +790,89 @@ Some examples are:</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Now lets look at the whole dataset. Since each <code>ts-point</code> has a label our x axis would get overwhelmed with labels, we use the <code>:xtic-interval</code> to specify that we only want labels displayed every 500 points.</p>
+<p>Datasets can be created and combined. Generally the dataset creation methods take the form of <code>make-&lt;dataset type&gt;</code> and either take vectors containing data or other datasets and create a new dataset.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Missing-Values">Missing Values<a class="anchor-link" href="#Missing-Values">&#182;</a></h3><p>CLML datasets support missing values. Missing values are represented as follows in the dataset-points:</p>
+<ul>
+<li>category CLML.HJS.MISSING-VALUE:+C-NAN+</li>
+<li>numeric  CLML.HJS.MISSING-VALUE:+NAN+</li>
+<li>unspecialized :NA</li>
+</ul>
+<p>There are also the following predicates available to detect missing values:</p>
+<ul>
+<li><code>CLML.HJS.MISSING-VALUE:C-NAN-P</code></li>
+<li><code>CLML.HJS.MISSING-VALUE:NAN-P</code></li>
+</ul>
+<p>The <code>read-data-from-file</code> also supports the mapping representations of missing values in data files to datasets.
+The <code>missing-values-list</code> keyword argument specifies the character sequences that will be recognized as missing values.</p>
+<p>To illustrate missing values support lets read in a CSV file containing the follow:</p>
+
+<pre><code>a,   b,   c
+1.0, 2.0, x
+NA,  3.0, NA
+
+</code></pre>
+<p>Here missing values are represented in the CSV file by <em>NA</em>. For the <code>read-data</code> function to recognize the missing values we must set the <code>:missing-values-list</code> parameter as shown below:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">ds</span> <span class="p">(</span><span class="nv">read-data-from-file</span> 
+            <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> <span class="s">&quot;https://mmaul.github.io/clml.data/sample/simple1.csv&quot;</span><span class="p">)</span> 
+            <span class="ss">:type</span> <span class="ss">:csv</span> 
+            <span class="ss">:csv-type-spec</span> <span class="o">&#39;</span><span class="p">(</span><span class="kt">double-float</span> <span class="kt">double-float</span> <span class="nb">string</span><span class="p">)</span> 
+            <span class="ss">:missing-values-list</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;NA&quot;</span><span class="p">)</span>
+          <span class="p">)))</span>
+            <span class="p">(</span><span class="nb">format</span> <span class="no">nil</span> <span class="s">&quot;~A~%~A~%&quot;</span> <span class="nv">ds</span> <span class="p">(</span><span class="nv">dataset-points</span> <span class="nv">ds</span><span class="p">)))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[12]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;#&lt;UNSPECIALIZED-DATASET &gt;
+DIMENSIONS: a | b | c
+TYPES:      UNKNOWN | UNKNOWN | UNKNOWN
+NUMBER OF DIMENSIONS: 3
+DATA POINTS: 2 POINTS
+
+#(#(1.0d0 2.0d0 x) #(NA 3.0d0 NA))
+&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can also see how missing values are represented in a specialized dataset:</p>
 
 </div>
 </div>
@@ -735,11 +882,17 @@ Some examples are:</p>
 <div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">progn</span>
- <span class="p">(</span><span class="nv">plot-dataset</span> <span class="nv">msi-access</span> <span class="s">&quot;hits&quot;</span> <span class="ss">:terminal</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:png</span> <span class="p">)</span>
-        <span class="ss">:title</span> <span class="s">&quot;MSI Access Log&quot;</span> <span class="ss">:ytics-font</span> <span class="s">&quot;,8&quot;</span> <span class="ss">:xtics-font</span> <span class="s">&quot;,8&quot;</span>
-        <span class="ss">:xlabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:ylabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:xtic-interval</span> <span class="mi">500</span> <span class="ss">:output</span> <span class="s">&quot;msi_access_log.png&quot;</span><span class="p">)</span>
- <span class="p">(</span><span class="nv">display-png</span> <span class="p">(</span><span class="nv">png-from-file</span> <span class="s">&quot;msi_access_log.png&quot;</span><span class="p">)))</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">ds</span> <span class="p">(</span><span class="nv">pick-and-specialize-data</span>
+             <span class="p">(</span><span class="nv">read-data-from-file</span> 
+               <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> <span class="s">&quot;https://mmaul.github.io/clml.data/sample/simple1.csv&quot;</span><span class="p">)</span> 
+               <span class="ss">:type</span> <span class="ss">:csv</span> 
+               <span class="ss">:csv-type-spec</span> <span class="o">&#39;</span><span class="p">(</span><span class="kt">double-float</span> <span class="kt">double-float</span> <span class="nb">string</span><span class="p">)</span> 
+               <span class="ss">:missing-values-list</span> <span class="o">&#39;</span><span class="p">(</span><span class="s">&quot;NA&quot;</span><span class="p">)</span>
+              <span class="p">)</span>
+              <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:numeric</span> <span class="ss">:numeric</span> <span class="ss">:category</span><span class="p">)</span>
+           <span class="p">)))</span>
+     <span class="p">(</span><span class="nb">format</span> <span class="no">nil</span> <span class="s">&quot;~A~%~A~%~A~%&quot;</span> <span class="nv">ds</span>  <span class="p">(</span><span class="nv">dataset-numeric-points</span> <span class="nv">ds</span><span class="p">)</span> <span class="p">(</span><span class="nv">dataset-category-points</span> <span class="nv">ds</span><span class="p">))</span>
+<span class="p">)</span>
 </pre></div>
 
 </div>
@@ -753,9 +906,17 @@ Some examples are:</p>
 <div class="output_area"><div class="prompt output_prompt">Out[13]:</div>
 
 
-<div class="output_png output_subarea output_execute_result">
-<img src="data:image/png;base64,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"
->
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: a | b | c
+TYPES:      NUMERIC | NUMERIC | CATEGORY
+NUMBER OF DIMENSIONS: 3
+CATEGORY DATA POINTS: 2 POINTS
+NUMERIC DATA POINTS: 2 POINTS
+
+#(#(1.0d0 2.0d0) #(#&lt;DOUBLE-FLOAT quiet NaN&gt; 3.0d0))
+#(#(x) #(0))
+&quot;</pre>
 </div>
 
 </div>
@@ -769,28 +930,57 @@ Some examples are:</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Cleaning-Datasets">Cleaning Datasets<a class="anchor-link" href="#Cleaning-Datasets">&#182;</a></h2><p>Sometimes data may have missing values or outliers. It is not unusual to have a broken or malfunctioning sensor generating your data. We have a way of dealing with that.</p>
-<p>The <code>time-series-dataset</code> class has a <code>ts-cleaning</code> method which can clean missing values an outliers. Lets look at the documentation:</p>
+<h4 id="Dataset-manipulation">Dataset manipulation<a class="anchor-link" href="#Dataset-manipulation">&#182;</a></h4><p>The following operations can be preformed on datasets:</p>
+<ul>
+<li>copying</li>
+<li>splitting and sampling</li>
+<li>cleaning</li>
+<li>shuffling</li>
+<li>deduplication</li>
+<li>storing</li>
+</ul>
+<p>We will use the UK Gas dataset to illustrate these operations.</p>
 
-<pre><code>TS-CLEANING names a generic function:
-  Lambda-list: (D &amp;KEY)
-  Derived type: (FUNCTION (T &amp;KEY) *)
-  Documentation:
-    - return: &lt;time-series-dataset&gt;
-    - arguments:
-        - d : &lt;time-series-dataset&gt;
-        - interp-types-alist: 
-             a-list (key: column name, datum: interpolation(:zero :min :max :mean :median :mode :spline)) | nil
-        - outlier-types-alist: 
-             a-list (key: column name, datum: outlier-verification(:std-dev :mean-dev :user :smirnov-grubbs 
-                          :freq)) | nil
-        - outlier-values-alist : 
-             a-list (key: outlier-verification datum: the value according to outlier-verification) | nil
-   - comment:
-       Same as /dataset-cleaning/ in read-data package.
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">ukgas</span> <span class="p">(</span><span class="nv">pick-and-specialize-data</span> <span class="p">(</span><span class="nv">read-data-from-file</span> 
+                           <span class="p">(</span><span class="nv">clml.utility.data:fetch</span> <span class="s">&quot;https://mmaul.github.io/clml.data/sample/UKgas.sexp&quot;</span><span class="p">))</span>
+                           <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:category</span> <span class="ss">:numeric</span><span class="p">)))</span>
+</pre></div>
 
-</code></pre>
-<p>Lets give it a try. In particular lets set the threshold for outliers to 5 standard deviations and set the interpolation method to mean.</p>
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[14]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>UKGAS</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Copying">Copying<a class="anchor-link" href="#Copying">&#182;</a></h5><p>The simplest operation is copying. <code>copy-dataset</code> makes a deep copy of the contents of a dataset.</p>
 
 </div>
 </div>
@@ -800,10 +990,7 @@ Some examples are:</p>
 <div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">c-msi-access</span> 
-    <span class="p">(</span><span class="nv">ts-cleaning</span> <span class="nv">msi-access</span> <span class="ss">:outlier-types-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;hits&quot;</span> <span class="o">.</span> <span class="ss">:std-dev</span><span class="p">))</span> 
-                            <span class="ss">:outlier-values-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="ss">:std-dev</span> <span class="o">.</span> <span class="mi">5</span><span class="p">))</span> 
-                            <span class="ss">:interp-types-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;hits&quot;</span> <span class="o">.</span> <span class="ss">:mean</span><span class="p">))))</span>
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">copy-dataset</span> <span class="nv">ukgas</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -818,43 +1005,13 @@ Some examples are:</p>
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>C-MSI-ACCESS</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="k">let</span> <span class="p">((</span><span class="nv">png-file</span> <span class="s">&quot;clean-msi-access-log&quot;</span><span class="p">))</span> 
- <span class="p">(</span><span class="nv">plot-dataset</span> <span class="nv">c-msi-access</span> <span class="s">&quot;hits&quot;</span> <span class="ss">:terminal</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:png</span><span class="p">)</span>
-        <span class="ss">:title</span> <span class="s">&quot;Cleaned MSI Access Log&quot;</span> <span class="ss">:ytics-font</span> <span class="s">&quot;,8&quot;</span> <span class="ss">:xtics-font</span> <span class="s">&quot;,8&quot;</span>
-        <span class="ss">:xlabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:ylabel-font</span> <span class="s">&quot;,15&quot;</span> <span class="ss">:xtic-interval</span> <span class="mi">500</span>
-        <span class="ss">:yrange</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">0</span> <span class="mi">8000</span><span class="p">)</span> 
-        <span class="ss">:output</span> <span class="nv">png-file</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">display-png</span> <span class="p">(</span><span class="nv">png-from-file</span> <span class="nv">png-file</span><span class="p">)))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt output_prompt">Out[16]:</div>
-
-
-<div class="output_png output_subarea output_execute_result">
-<img src="data:image/png;base64,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"
->
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+TYPES:      CATEGORY | NUMERIC
+NUMBER OF DIMENSIONS: 2
+CATEGORY DATA POINTS: 108 POINTS
+NUMERIC DATA POINTS: 108 POINTS
+</pre>
 </div>
 
 </div>
@@ -868,10 +1025,741 @@ Some examples are:</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Notice the datapoint near 13 July 2008 15:00 to 15:59 that previously spiked to over 7000, is now more reasonable.</p>
-<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>I would like to thank Fredreric Peschanski the creator of <a href="https://github.com/fredokun/fishbowl-repl"><code>fishbowl</code></a> which provides common lisp support for iPython. I would also like to thank Masataro Asai the creator of <a href="https://github.com/guicho271828/eazy-gnuplot/"><code>eazy-gnuplot</code></a>. I would like to thank the creators of iPython and project <a href="http://jupyter.org/">Jupyter</a> a truly cross platform mechanisim for th presentation of code and content. Finally I would like to thank github for [providing the ability to view notebooks inside github repositories] (<a href="http://blog.jupyter.org/2015/05/07/rendering-notebooks-on-github/">http://blog.jupyter.org/2015/05/07/rendering-notebooks-on-github/</a>)</p>
-<p>The iPython notebook and source for this tutorial can be found in the <a href="https://github.com/mmaul/clml.tutorials.git">clml.tutorials https://github.com/mmaul/clml.tutorials.git</a> github repository.</p>
-<h3 id="Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-Part-II-which-will-cover-prediction,-anomaly-detection.">Stay tuned to <a href="https://mmaul.github.io/clml.tutorials/">clml.tutorials</a> blog or <a href="https://mmaul.github.io/clml.tutorials/feed.xml">RSS feed</a> for Part II which will cover prediction, anomaly-detection.<a class="anchor-link" href="#Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-Part-II-which-will-cover-prediction,-anomaly-detection.">&#182;</a></h3>
+<h5 id="Splitting-and-Sampling">Splitting and Sampling<a class="anchor-link" href="#Splitting-and-Sampling">&#182;</a></h5><p>Datasets can be subdivided by two similar methods <code>make-bootstrap-sample-dataset</code> and <code>divide-dataset</code></p>
+<p>The <code>divide dataset</code> returns a dataset split into two parts based upon the <code>:divide-ratio</code> like <code>pick-and-specialize-data</code> <code>divide-dataset</code> can limit the section values accessed with the <code>:range</code> and <code>:except</code> parameters. It can also pull values in a pseudo-random manner values in to their new datasets.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">multiple-value-list</span> <span class="p">(</span><span class="nv">divide-dataset</span> <span class="nv">ukgas</span> <span class="ss">:divide-ratio</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">3</span> <span class="mi">1</span><span class="p">)</span> <span class="ss">:random</span> <span class="no">t</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[17]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+
+TYPES:      CATEGORY | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+CATEGORY DATA POINTS: 81 POINTS
+
+NUMERIC DATA POINTS: 81 POINTS
+
+ #&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+
+TYPES:      CATEGORY | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+CATEGORY DATA POINTS: 27 POINTS
+
+NUMERIC DATA POINTS: 27 POINTS
+)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>make-bootstrap-sample-datasets</code> on the other hand shuffles a dataset into a number of specified datasets of equal length to the original dataset. The <code>:number-of-datasets</code>parameter defaults to 10.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">make-bootstrap-sample-datasets</span> <span class="nv">ukgas</span> <span class="ss">:number-of-datasets</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[18]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+
+TYPES:      CATEGORY | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+CATEGORY DATA POINTS: 108 POINTS
+
+NUMERIC DATA POINTS: 108 POINTS
+
+ #&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+
+TYPES:      CATEGORY | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+CATEGORY DATA POINTS: 108 POINTS
+
+NUMERIC DATA POINTS: 108 POINTS
+
+ #&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+
+TYPES:      CATEGORY | NUMERIC
+
+NUMBER OF DIMENSIONS: 2
+
+CATEGORY DATA POINTS: 108 POINTS
+
+NUMERIC DATA POINTS: 108 POINTS
+)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Cleaning">Cleaning<a class="anchor-link" href="#Cleaning">&#182;</a></h5><p>One nice features of CLML is the dataset cleaning capabilities. The <code>dataset-cleaning</code> method provides the following:</p>
+<ul>
+<li>outlier detection for numeric points<ul>
+<li>standard deviation </li>
+<li>mean deviation </li>
+<li>user provided function</li>
+<li>smirnov-grubbs </li>
+<li>outlier detection for categorical points</li>
+<li>frequency based</li>
+<li>User provided function</li>
+</ul>
+</li>
+<li>Outlier and missing value interpolation using:<ul>
+<li>zero </li>
+<li>min </li>
+<li>max </li>
+<li>mean </li>
+<li>median </li>
+<li>mode </li>
+<li>spline</li>
+</ul>
+</li>
+</ul>
+<p>To illustrate we will preform dataset cleaning where outliers will be points that exceed 1 standard deviation and will be replaced by zero.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">dataset-cleaning</span> <span class="nv">ukgas</span> <span class="ss">:outlier-types-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;UKgas&quot;</span> <span class="o">.</span> <span class="ss">:std-dev</span><span class="p">))</span> 
+                         <span class="ss">:outlier-values-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="ss">:std-dev</span> <span class="o">.</span> <span class="mi">1</span><span class="p">))</span> 
+                         <span class="ss">:interp-types-alist</span> <span class="o">&#39;</span><span class="p">((</span><span class="s">&quot;UKgas&quot;</span> <span class="o">.</span> <span class="ss">:zero</span><span class="p">)))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+TYPES:      CATEGORY | NUMERIC
+NUMBER OF DIMENSIONS: 2
+CATEGORY DATA POINTS: 108 POINTS
+NUMERIC DATA POINTS: 108 POINTS
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Adding-dimensions-and-Concatenating-Datasets">Adding dimensions and Concatenating Datasets<a class="anchor-link" href="#Adding-dimensions-and-Concatenating-Datasets">&#182;</a></h5><h6 id="Adding-dimensions">Adding dimensions<a class="anchor-link" href="#Adding-dimensions">&#182;</a></h6><p>In some cases you may want to add a computed column or add a column to a dataset to hold the product of a computation on a dataset. The <code>add-dim</code> method can accomplish this easily. It can add an existing column of points with the :points parameter, it can also create a column with points filled with a initial value with the <code>:initial-value</code> parameter. The two mandatory parameters are the dataset to add the dimension to, the name of the new dimension and the type. If the dataset is either a category or numeric only dataset <code>add-dim</code> will create a numeric-and-category-dataset if a column of a different type is added.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">add-dim</span> <span class="nv">ukgas</span> <span class="s">&quot;mpg&quot;</span> <span class="ss">:numeric</span> <span class="ss">:initial-value</span> <span class="mf">0.0d0</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[20]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas | mpg
+TYPES:      CATEGORY | NUMERIC | NUMERIC
+NUMBER OF DIMENSIONS: 3
+CATEGORY DATA POINTS: 108 POINTS
+NUMERIC DATA POINTS: 108 POINTS
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Concatenating-datasets">Concatenating datasets<a class="anchor-link" href="#Concatenating-datasets">&#182;</a></h5><p>Two datasets with equal numbers of rows can be concatenated or glued together vertically. <code>concatenate-datasets</code> takes two datasets as parameters and return a dataset with the points of the first dataset stacked on top of the points of the second dataset. The dimension name names of the first one dataset are retained in the new dataset.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">concatenate-datasets</span> <span class="nv">ukgas</span> <span class="nv">ukgas</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;NUMERIC-AND-CATEGORY-DATASET &gt;
+DIMENSIONS: year season | UKgas
+TYPES:      CATEGORY | NUMERIC
+NUMBER OF DIMENSIONS: 2
+CATEGORY DATA POINTS: 216 POINTS
+NUMERIC DATA POINTS: 216 POINTS
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Deduplicating-datasets">Deduplicating datasets<a class="anchor-link" href="#Deduplicating-datasets">&#182;</a></h5><p>Datasets can be deduplicated in place with the <code>dedup-dataset!</code> method. This functionality is currently only implemented for numeric, category and unspecialized datasets.</p>
+<h5 id="Storing-datasets">Storing datasets<a class="anchor-link" href="#Storing-datasets">&#182;</a></h5><p>Datasets can be saved to a file in csv format with the <code>write-dataset</code> method.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">write-dataset</span> <span class="nv">ukgas</span> <span class="s">&quot;gasgas.csv&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[24]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(CLML.UTILITY.CSV::OK)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Working-with-dataset-points">Working with dataset points<a class="anchor-link" href="#Working-with-dataset-points">&#182;</a></h4><p>Columns and values can be accessed and extracted from datasets using the <code>!!</code> macros. This macro returns the column name or list of column names as a vectors of vectors if multiple column names are specified or as a single vector if a single column name is specified.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">!!</span> <span class="nv">ukgas</span> <span class="s">&quot;UKgas&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[23]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#(160.1d0 129.7d0 84.8d0 120.1d0 160.1d0 124.9d0 84.8d0 116.9d0 169.7d0 140.9d0
+  89.7d0 123.3d0 187.3d0 144.1d0 92.9d0 120.1d0 176.1d0 147.3d0 89.7d0 123.3d0
+  185.7d0 155.3d0 99.3d0 131.3d0 200.1d0 161.7d0 102.5d0 136.1d0 204.9d0
+  176.1d0 112.1d0 140.9d0 227.3d0 195.3d0 115.3d0 142.5d0 244.9d0 214.5d0
+  118.5d0 153.7d0 244.9d0 216.1d0 188.9d0 142.5d0 301.0d0 196.9d0 136.1d0
+  267.3d0 317.0d0 230.5d0 152.1d0 336.2d0 371.4d0 240.1d0 158.5d0 355.4d0
+  449.9d0 286.6d0 179.3d0 403.4d0 491.5d0 321.8d0 177.7d0 409.8d0 593.9d0
+  329.8d0 176.1d0 483.5d0 584.3d0 395.4d0 187.3d0 485.1d0 669.2d0 421.0d0
+  216.1d0 509.1d0 827.7d0 467.5d0 209.7d0 542.7d0 840.5d0 414.6d0 217.7d0
+  670.8d0 848.5d0 437.0d0 209.7d0 701.2d0 925.3d0 443.4d0 214.5d0 683.6d0
+  917.3d0 515.5d0 224.1d0 694.8d0 989.4d0 477.1d0 233.7d0 730.0d0 1087.0d0
+  534.7d0 281.8d0 787.6d0 1163.9d0 613.1d0 347.4d0 782.8d0)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Dataset points can also be accessed with the slot accessor. Since category and numeric data are stored separately in heterogeneous datasets separate accessors are used to access the points.</p>
+<p>The list below shows which methods are applicable to the dataset type.</p>
+<ul>
+<li><code>dataset-points</code>: <code>unspecialized-dataset</code></li>
+<li><code>dataset-numeric-points</code>: <code>numeric-dataset</code> <code>numeric-and-category-dataset</code> <code>numeric-matrix-dataset numeric-matrix-and-category-dataset</code></li>
+<li><code>dataset-category-points</code>: <code>category-dataset</code> <code>numeric-and-category-dataset</code> <code>numeric-matrix-dataset</code> <code>numeric-matrix-and-category-dataset</code></li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">dataset-numeric-points</span> <span class="nv">ukgas</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[25]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#(#(160.1d0) #(129.7d0) #(84.8d0) #(120.1d0) #(160.1d0) #(124.9d0) #(84.8d0)
+  #(116.9d0) #(169.7d0) #(140.9d0) #(89.7d0) #(123.3d0) #(187.3d0) #(144.1d0)
+  #(92.9d0) #(120.1d0) #(176.1d0) #(147.3d0) #(89.7d0) #(123.3d0) #(185.7d0)
+  #(155.3d0) #(99.3d0) #(131.3d0) #(200.1d0) #(161.7d0) #(102.5d0) #(136.1d0)
+  #(204.9d0) #(176.1d0) #(112.1d0) #(140.9d0) #(227.3d0) #(195.3d0) #(115.3d0)
+  #(142.5d0) #(244.9d0) #(214.5d0) #(118.5d0) #(153.7d0) #(244.9d0) #(216.1d0)
+  #(188.9d0) #(142.5d0) #(301.0d0) #(196.9d0) #(136.1d0) #(267.3d0) #(317.0d0)
+  #(230.5d0) #(152.1d0) #(336.2d0) #(371.4d0) #(240.1d0) #(158.5d0) #(355.4d0)
+  #(449.9d0) #(286.6d0) #(179.3d0) #(403.4d0) #(491.5d0) #(321.8d0) #(177.7d0)
+  #(409.8d0) #(593.9d0) #(329.8d0) #(176.1d0) #(483.5d0) #(584.3d0) #(395.4d0)
+  #(187.3d0) #(485.1d0) #(669.2d0) #(421.0d0) #(216.1d0) #(509.1d0) #(827.7d0)
+  #(467.5d0) #(209.7d0) #(542.7d0) #(840.5d0) #(414.6d0) #(217.7d0) #(670.8d0)
+  #(848.5d0) #(437.0d0) #(209.7d0) #(701.2d0) #(925.3d0) #(443.4d0) #(214.5d0)
+  #(683.6d0) #(917.3d0) #(515.5d0) #(224.1d0) #(694.8d0) #(989.4d0) #(477.1d0)
+  #(233.7d0) #(730.0d0) #(1087.0d0) #(534.7d0) #(281.8d0) #(787.6d0)
+  #(1163.9d0) #(613.1d0) #(347.4d0) #(782.8d0))</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="A-little-something-extra,-R-datasets">A little something extra, <code>R-datasets</code><a class="anchor-link" href="#A-little-something-extra,-R-datasets">&#182;</a></h2><p>One thing that I've always found handy in R is a standard, curated, extensive and documented series of datasets. Wouldn't it be nice to have access to these directly as datasets in CLML. The <code>R-datasets</code> system in <code>clml.extras</code> provides this capability. A particularly good use case for these datasets is to be able to follow along with examples and tutorials for R in CLML.</p>
+<h4 id="Note">Note<a class="anchor-link" href="#Note">&#182;</a></h4><p>The <code>clml.extras</code> systems are not currently part of quicklisp so if you are following along with this tutorial and are expecting just to <code>(quickload :clml.extras.Rdatasets)</code> you can't till you clone the clml.extras repository <a href="http://github.com/mmaul/clml.extras.git">http://github.com/mmaul/clml.extras.git</a> into your <code>quicklisp/local-projects</code> directory</p>
+<h3 id="Using-Rdatasets">Using Rdatasets<a class="anchor-link" href="#Using-Rdatasets">&#182;</a></h3><p>The Rdatasets package makes datasets included with the R language distribution available as clml datasets.
+R datasets are obtained csv files on Vincent Centarel's github repository.
+More information on these datasets can be found at <a href="http://vincentarelbundock.github.com/Rdatasets">http://vincentarelbundock.github.com/Rdatasets</a></p>
+<p>Because type information is not included it may be necessary to provide a <code>csv-type-spec</code>
+for the columns in the csv file.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">ql:quickload</span> <span class="ss">:clml.r-datasets</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>To load &quot;clml.r-datasets&quot;:
+  Load 1 ASDF system:
+    clml.r-datasets
+
+; Loading &quot;clml.r-datasets&quot;
+
+</pre>
+</div>
+</div>
+
+<div class="output_area"><div class="prompt output_prompt">Out[49]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>(:CLML.R-DATASETS)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">use-package</span> <span class="ss">:clml.r-datasets</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[27]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>T</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">dd</span> <span class="p">(</span><span class="nv">get-r-dataset-directory</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[28]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>DD</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">subseq</span> <span class="p">(</span><span class="nv">inventory</span> <span class="nv">dd</span> <span class="ss">:stream</span> <span class="no">nil</span><span class="p">)</span> <span class="mi">0</span> <span class="mi">505</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[54]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;Package                   Item                      Title                     
+------------------------- ------------------------- ------------------------- 
+datasets                  AirPassengers             Monthly Airline Passenger Numbers 1949-1960 
+
+datasets                  BJsales                   Sales Data with Leading Indicator 
+
+datasets                  BOD                       Biochemical Oxygen Demand 
+
+datasets                  Formaldehyde              Determination of Formaldehyde&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[57]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">subseq</span> <span class="p">(</span><span class="nv">dataset-documentation</span>  <span class="nv">dd</span>  <span class="s">&quot;datasets&quot;</span> <span class="s">&quot;BOD&quot;</span> <span class="ss">:stream</span> <span class="no">nil</span><span class="p">)</span> <span class="mi">0</span> <span class="mi">200</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[57]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&quot;\&quot;
+R: Biochemical Oxygen Demand
+
+
+
+
+BODR Documentation
+
+ Biochemical Oxygen Demand 
+
+Description
+
+The BOD data frame has 6 rows and 2 columns giving the
+biochemical oxygen demand versus time in an eval&quot;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nb">defparameter</span> <span class="nv">bod</span> <span class="p">(</span><span class="nv">get-dataset</span> <span class="nv">dd</span> <span class="s">&quot;datasets&quot;</span> <span class="s">&quot;BOD&quot;</span> <span class="ss">:csv-type-spec</span> <span class="o">&#39;</span><span class="p">(</span><span class="kt">double-float</span> <span class="kt">double-float</span> <span class="kt">double-float</span><span class="p">)))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[38]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>BOD</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="nv">bod</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;UNSPECIALIZED-DATASET &gt;
+DIMENSIONS:  | Time | demand
+TYPES:      UNKNOWN | UNKNOWN | UNKNOWN
+NUMBER OF DIMENSIONS: 3
+DATA POINTS: 6 POINTS
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-common-lisp"><pre><span class="p">(</span><span class="nv">pick-and-specialize-data</span> <span class="nv">bod</span> <span class="ss">:data-types</span> <span class="o">&#39;</span><span class="p">(</span><span class="ss">:numeric</span> <span class="ss">:numeric</span> <span class="ss">:numeric</span><span class="p">))</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>#&lt;NUMERIC-DATASET &gt;
+DIMENSIONS:  | Time | demand
+TYPES:      NUMERIC | NUMERIC | NUMERIC
+NUMBER OF DIMENSIONS: 3
+NUMERIC DATA POINTS: 6 POINTS
+</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>The iPython notebook and source for this tutorial can be found in the <a href="https://github.com/mmaul/clml.tutorials.git">clml.tutorials https://github.com/mmaul/clml.tutorials.git</a> github repository.</p>
+<h3 id="Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-more-CLML-tutorials..">Stay tuned to <a href="https://mmaul.github.io/clml.tutorials/">clml.tutorials</a> blog or <a href="https://mmaul.github.io/clml.tutorials/feed.xml">RSS feed</a> for more CLML tutorials..<a class="anchor-link" href="#Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-more-CLML-tutorials..">&#182;</a></h3>
 </div>
 </div>
 </div>
