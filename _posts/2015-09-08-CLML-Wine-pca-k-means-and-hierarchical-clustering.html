@@ -226,7 +226,7 @@ div#notebook {
 Clustering is an unsupervised learning technique, with the goal bing to group to samples into a given number of partitions.
 Clustering uses uses the similarity between examples and groups examples based of their mutual similarities.</p>
 <h2 id="Wine">Wine<a class="anchor-link" href="#Wine">&#182;</a></h2><p>Wine such a multideminensional beverage. A feast for the senses, taste, smell even for the eyes. It also pairs well with statistical analysis techniques and even Lisp. What does wine and statistical analysis have to do with one another you may ask. Well the Wine dataset at it the 'goto' dataset used in just about every introduction cluster analysis. The Wine dataset is a chemical analysis of three types of wines wines grown in a region of Italy. The dataset contains an analysis of 178 samples, with 13 results of chemical assays for each sample. It is small enough yet contains enough complexity to be interesting.</p>
-<p>While were on the subject of wine if you find yourself in eastern Washington, I highly recommend stopping by the <a href="www.paradisosdelsol.com">Parisisos del Sol</a> winery, good wine, down to earth atmosphere and a really interesting and knowledgeable propriter.</p>
+<p>While were on the subject of wine if you find yourself in eastern Washington, I highly recommend stopping by the <a href="www.paradisosdelsol.com">Parisisos del Sol</a> winery, good wine, down to earth atmosphere and a really interesting and knowledgeable proprietor.</p>
 <p>But back to the cluster analysis...</p>
 <p>Lets get started by loading the system necessary for this tutorial and creating a namespace to work in.</p>
 
@@ -365,7 +365,7 @@ To load &quot;eazy-gnuplot&quot;:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Take-time-to-get-to-know-your-wine">Take time to get to know your wine<a class="anchor-link" href="#Take-time-to-get-to-know-your-wine">&#182;</a></h2><p>This tutorial illustrates how to use clustering, as well as how to use Principal Componen Analysis in support of k-means and also hierarchical clustering in CLML. Just like swilling a bottle of wine is not a good thing neither is turning losse analysis techniques willy nilly on data. It is necessary to understand your data first, as the saying goes, garbage in garbage out...</p>
+<h2 id="Take-time-to-get-to-know-your-wine">Take time to get to know your wine<a class="anchor-link" href="#Take-time-to-get-to-know-your-wine">&#182;</a></h2><p>This tutorial illustrates how to use clustering, as well as how to use Principal Component Analysis in support of k-means and also hierarchical clustering in CLML. Just like swilling a bottle of wine is not a good thing neither is turning loose analysis techniques willy nilly on data. It is necessary to understand your data first, as the saying goes, garbage in garbage out...</p>
 <p>Another take away from this tutorial is working with diverse data. Our dataset comes UCI Machine learning archive, the convention there is a headerless CSV file with seperate file ending in <code>.names</code> containing the a description of the dataset and the column names.</p>
 <p>So armed with some information about the origin and meaning of the data, the orignization and the location we can begin.
 The dataset is located at <a href="http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine">http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine</a></p>
@@ -461,9 +461,9 @@ The dataset is located at <a href="http://archive.ics.uci.edu/ml/machine-learnin
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So is is all numeric data, The first colum from the dataset definition is the class so we don't want to give that to our
-clustering algorithim as that would be cheating. The numeric collumns should be of type double float</p>
-<p>The k-means, and hierichal clustering implementationsrequires a numeric-dataset which we create by using <code>pick-and-specialize data</code></p>
+<p>So is is all numeric data, The first column from the dataset definition is the class so we don't want to give that to our
+clustering algorithm  as that would be cheating. The numeric columns should be of type double float</p>
+<p>The k-means, and hierarchal clustering implementations require a numeric-dataset which we create by using <code>pick-and-specialize data</code></p>
 
 </div>
 </div>
@@ -533,16 +533,16 @@ clustering algorithim as that would be cheating. The numeric collumns should be 
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Letting-the-wine-breathe">Letting the wine breathe<a class="anchor-link" href="#Letting-the-wine-breathe">&#182;</a></h2><p>The process of letting wine breathe is to exposure to the surrounding air. Letting allowing wine to mix and mingle with air and surrounding tempature. Similarly our data needs to "mix and mingle" so that the scales become more uniform which is helpful to clustering algorithims.</p>
+<h2 id="Letting-the-wine-breathe">Letting the wine breathe<a class="anchor-link" href="#Letting-the-wine-breathe">&#182;</a></h2><p>The process of letting wine breathe is to exposure to the surrounding air. Letting allowing wine to mix and mingle with air and surrounding temperature. Similarly our data needs to "mix and mingle" so that the scales become more uniform which is helpful to clustering algorithms.</p>
 <p>So we need to consider if the data needs to be standardized, generally the answer will be yes, unless the 
 columns are all of the same units and have lov variance. Specifically with this datasets since the columns are using different units scaling is necessary. Our our implementation of <code>k-means</code> can do our standardization for us however we will need to do it for the principal component analysis.  The <code>standardize</code> function used here will be the z-score  which is $(c - \mu) / \sigma$.</p>
-<h2 id="Savoring-the-wine">Savoring the wine<a class="anchor-link" href="#Savoring-the-wine">&#182;</a></h2><p>Savoring ths the process of detecting the essential properties generally using taste, we whiil however use principal component analysis instead.</p>
+<h2 id="Savoring-the-wine">Savoring the wine<a class="anchor-link" href="#Savoring-the-wine">&#182;</a></h2><p>Savoring, the the process of detecting the essential properties generally using taste, we wiil however use principal component analysis instead.</p>
 <p>So what columns should be evaluated? We could evaluate all of them that might be okay, and would work in this case. However in the case of large datasets it may be necessary to reduce the dimensionality to decrease execution time. It could also be the case that some relatively unimportant columns could be throwing off the results.</p>
-<h4 id="Principal-Component-Analysis">Principal Component Analysis<a class="anchor-link" href="#Principal-Component-Analysis">&#182;</a></h4><p>Well one technique we can use to select the relevant columns for analysis is principal component analysis. Principal Component Analysis is a set of orthagonal transformations that reduce dimensionality in a dataset. One of the things that PCA can tell us is the mangnitute of the contribution of each column to the variation in the data.</p>
-<p>PCA is one of those algrorithims that needs regular data so we are going to standardize the dataset first.</p>
+<h4 id="Principal-Component-Analysis">Principal Component Analysis<a class="anchor-link" href="#Principal-Component-Analysis">&#182;</a></h4><p>Well one technique we can use to select the relevant columns for analysis is principal component analysis. Principal Component Analysis is a set of orthogonal  transformations that reduce dimensionality in a dataset. One of the things that PCA can tell us is the magnitude of the contribution of each column to the variation in the data.</p>
+<p>PCA is one of those algorithms that needs regular data so we are going to standardize the dataset first.</p>
 <p>Lets compute a few things we will be needing.</p>
 <ul>
-<li><code>standardized-wine</code>: The stadardized copy of wine dataset</li>
+<li><code>standardized-wine</code>: The standardized copy of wine dataset</li>
 <li><code>pca-result</code>: The result of the PCA analysis of the standardized wine dataset</li>
 </ul>
 
@@ -677,7 +677,7 @@ columns are all of the same units and have lov variance. Specifically with this 
 <h2 id="On-to-the-wine-tasting,-a-blind-tasting">On to the wine tasting, a blind tasting<a class="anchor-link" href="#On-to-the-wine-tasting,-a-blind-tasting">&#182;</a></h2><p>So for wine to be judged impartially it should be served without context and evaluated solely on its own merits. This is really what we are doing we already stripped the classifications from the dataset, and we aren't even tasting the wines ourselves. Out goal is to try match the wine varietal type with the preexisting classifications.</p>
 <h4 id="Deciding-on-the-clusters">Deciding on the clusters<a class="anchor-link" href="#Deciding-on-the-clusters">&#182;</a></h4><p>We need to have some idea of how the data will be grouped. In some cases this will be known, in others it will not. In this case we know theere are three different classifications.</p>
 <p>But what if we didn't know?</p>
-<p>One method is to look at the within group of sums of squares among the contributions of the principal components of the dataset. We calculate the first value storing it in <code>wss1</code> the remaining values can be calulated by taking the sum of squares of the distances returned from running k-means (as the <code>distance-between-point-and-owner</code> slot in the <code>pca-result</code> instance returned from k-means)on the selected principal components from the previous PCA analysis.</p>
+<p>One method is to look at the within group of sums of squares among the contributions of the principal components of the dataset. We calculate the first value storing it in <code>wss1</code> the remaining values can be calculated by taking the sum of squares of the distances returned from running k-means (as the <code>distance-between-point-and-owner</code> slot in the <code>pca-result</code> instance returned from k-means)on the selected principal components from the previous PCA analysis.</p>
 
 </div>
 </div>
@@ -733,7 +733,7 @@ columns are all of the same units and have lov variance. Specifically with this 
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Again we use the "elbow" method to make our selection (additionally in either selecting number of cluseter or the pricinpal components we can use the 85% precentile to make the choice point).</p>
+<p>Again we use the "elbow" method to make our selection (additionally in either selecting number of cluster or the principal components we can use the 85% precentile to make the choice point).</p>
 <p>But what is really cool is the elbow lies right on three cluster which matches the number of clusters that had been manually classified in the wine dataset.</p>
 <h4 id="K-means">K-means<a class="anchor-link" href="#K-means">&#182;</a></h4><p>So we kind of jumped into using <code>k-means</code> before talking about it...
 Simplified description of the K-means Algorithm:</p>
@@ -742,11 +742,11 @@ Simplified description of the K-means Algorithm:</p>
 <li>The squared distance from each object to each cluster is computed, then the objects are assigned to the nearest cluster.</li>
 <li>New centroid are computed for each cluster – and each cluster is  by the respective cluster centroid.</li>
 <li>The squared distance from each object to each cluster is computed, and the objects are assigned to the cluster nearest cluster with the smallest squared distance.</li>
-<li>Based upon the new membership assignement cluster centroids are recalculated.</li>
-<li>Steps 4 and 5 are repeated until stability is achived.</li>
+<li>Based upon the new membership assignment cluster centroids are recalculated.</li>
+<li>Steps 4 and 5 are repeated until stability is achieved.</li>
 </ol>
-<h6 id="CLML-bits">CLML bits<a class="anchor-link" href="#CLML-bits">&#182;</a></h6><p>The k in k-means is the number of clusters that k-means will be classifing. K is required parameter in k-means but how should we decide what to set it to?  Well we already know from the original dataset that there are three clusters.</p>
-<p>So for testing or teaching you will want to set a fixed <code>:random-state</code> which will allow you have repeatable results (It influnces the choice of the seed clusters). 
+<h6 id="CLML-bits">CLML bits<a class="anchor-link" href="#CLML-bits">&#182;</a></h6><p>The k in k-means is the number of clusters that k-means will be classifying.. K is required parameter in k-means but how should we decide what to set it to?  Well we already know from the original dataset that there are three clusters.</p>
+<p>So for testing or teaching you will want to set a fixed <code>:random-state</code> which will allow you have repeatable results (It influences the choice of the seed clusters). 
 But keep in mind if you set it all the time you might get caught on a local optima that you might have avoided if 
 you had allowed the state to be random.</p>
 <p>The CLML implementation of k-means accepts a number of parameters for running k-means.</p>
@@ -814,7 +814,7 @@ you had allowed the state to be random.</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>And we see out cluster assigment in the pretty print of the object. Lets compare roughly with the counts of the classification that came with the dataset.</p>
+<p>And we see out cluster assignment  in the pretty print of the object. Lets compare roughly with the counts of the classification that came with the dataset.</p>
 
 </div>
 </div>
@@ -894,8 +894,8 @@ you had allowed the state to be random.</p>
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Hierarchical-Clustering">Hierarchical Clustering<a class="anchor-link" href="#Hierarchical-Clustering">&#182;</a></h4><h6 id="How-it-works">How it works<a class="anchor-link" href="#How-it-works">&#182;</a></h6><p>The clml imlementation of Hierarchical Clustering uses agglomerative clustering (bottom up approach)
-A nice concise description of the processs of agglomerative clustering from <a href="http://www.improvedoutcomes.com/docs/WebSiteDocs/Clustering/Agglomerative_Hierarchical_Clustering_Overview.htm">improvedoutcomes.com/</a> is as follows:</p>
+<h4 id="Hierarchical-Clustering">Hierarchical Clustering<a class="anchor-link" href="#Hierarchical-Clustering">&#182;</a></h4><h6 id="How-it-works">How it works<a class="anchor-link" href="#How-it-works">&#182;</a></h6><p>The CLML implementation of Hierarchical Clustering uses agglomerative clustering (bottom up approach)
+A nice concise description of the process of agglomerative clustering from <a href="http://www.improvedoutcomes.com/docs/WebSiteDocs/Clustering/Agglomerative_Hierarchical_Clustering_Overview.htm">improvedoutcomes.com</a> is as follows:</p>
 <ul>
 <li>Assign each object to a separate cluster.</li>
 <li>Evaluate all pair-wise distances between clusters (distance metrics are described in Distance Metrics Overview).</li>
@@ -905,7 +905,7 @@ A nice concise description of the processs of agglomerative clustering from <a h
 <li>Evaluate all distances from this new cluster to all other clusters, and update the matrix.</li>
 <li>Repeat until the distance matrix is reduced to a single element.</li>
 </ul>
-<h6 id="CLML-Bits">CLML Bits<a class="anchor-link" href="#CLML-Bits">&#182;</a></h6><p>The <code>distance-matrix</code>takes an optional argument <code>:distance-fn</code> which specifices the distance function used in the distance computations. The distance functions avalable are:</p>
+<h6 id="CLML-Bits">CLML Bits<a class="anchor-link" href="#CLML-Bits">&#182;</a></h6><p>The <code>distance-matrix</code>takes an optional argument <code>:distance-fn</code> which specifies the distance function used in the distance computations. The distance functions available are:</p>
 <ul>
 <li>ecludian (Default)</li>
 <li>manhattan</li>
@@ -914,7 +914,7 @@ A nice concise description of the processs of agglomerative clustering from <a h
 <li>tanimoto</li>
 <li>caberra</li>
 </ul>
-<p>The <code>cophonetic-matric</code> function evaluates the distance matric and returns the merge and cophonetic matrix. The <code>cophonetic-matrix</code> take a optional <code>:method</code> parameter to specify the method used to evaulate the distance matrix. The evaluation methods are as follows.</p>
+<p>The <code>cophonetic-matric</code> function evaluates the distance matrix and returns the merge and cophonetic matrix. <code>cophonetic-matrix</code> take a optional <code>:method</code> parameter to specify the method used to evaluate the distance matrix. The evaluation methods are as follows.</p>
 <ul>
 <li><code>hc-single</code></li>
 <li><code>hc-complete</code></li>
@@ -993,7 +993,7 @@ Class counts:((1 65) (2 54) (3 59))
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-common-lisp"><pre><span class="nv">wine-classifications</span>
@@ -1007,7 +1007,7 @@ Class counts:((1 65) (2 54) (3 59))
 <div class="output">
 
 
-<div class="output_area"><div class="prompt output_prompt">Out[19]:</div>
+<div class="output_area"><div class="prompt output_prompt">Out[21]:</div>
 
 
 <div class="output_text output_subarea output_execute_result">
@@ -1025,7 +1025,7 @@ Class counts:((1 65) (2 54) (3 59))
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>In general k-means is computationaly more effecient. The quality of classification results of k-means vs hierichal clustering is up for debate. In the second part of this tutorial we will explore cluster validation, which will let us evaluate our results more thoroughly.</p>
+<h2 id="Conclusion">Conclusion<a class="anchor-link" href="#Conclusion">&#182;</a></h2><p>In general k-means is computationally  more efficient. The quality of classification results of k-means vs hierarchal clustering is up for debate. In the second part of this tutorial we will explore cluster validation, which will let us evaluate our results more thoroughly.</p>
 <p>The iPython notebook and source for this tutorial can be found in the <a href="https://github.com/mmaul/clml.tutorials.git">clml.tutorials https://github.com/mmaul/clml.tutorials.git</a> github repository.</p>
 <h3 id="Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-part-2-of-this-tutorial-'CLML-Wine-and-cluster-validation'-and-for-more-CLML-tutorials..">Stay tuned to <a href="https://mmaul.github.io/clml.tutorials/">clml.tutorials</a> blog or <a href="https://mmaul.github.io/clml.tutorials/feed.xml">RSS feed</a> for part 2 of this tutorial 'CLML Wine and cluster validation' and for more CLML tutorials..<a class="anchor-link" href="#Stay-tuned-to-clml.tutorials-blog-or-RSS-feed-for-part-2-of-this-tutorial-'CLML-Wine-and-cluster-validation'-and-for-more-CLML-tutorials..">&#182;</a></h3>
 </div>
